@@ -11,7 +11,6 @@ data Prop = Const Bool
 
 type Subst = [(Char, Bool)]
 
---exercise 1
 p1 :: Prop
 p2 :: Prop
 p3 :: Prop
@@ -22,7 +21,6 @@ p2 = Equiv (And (Var 'A') (Var 'B')) (And (Var 'B') (Var 'A'))
 p3 = Imply (Var 'A') (And (Var 'A') (Var 'B')) 
 p4 = Imply (And (Var 'A') (Imply (Var 'A') (Var 'B'))) (Var 'B')
 
---exercise 2 **
 vars :: Prop -> [Char]
 vars (Const x) = []
 vars (Var x) = [x]
@@ -32,41 +30,32 @@ vars (Or x y) = vars x ++ vars y
 vars (Imply x y) = vars x ++ vars y
 vars (Equiv x y) = vars x ++ vars y
 
---exercise 3***
 rmdups :: Eq a => [a] -> [a]
 rmdups [] = []
 rmdups (x:xs) = x : rmdups (filter (/= x) xs)
 
---exercise 4***
 bools :: Int -> [[Bool]]
 bools 0 = [[]]
 --bools n = [b:bs | bs <- bools (n-1), b <- [True, False]]
 bools n = [True:bs | bs <- bools (n-1)] ++ [False:bs | bs <- bools (n-1)]
 
---exercise 5****
---substs :: Prop -> [Subst]
---type Subst = [(Char, Bool)]
 substs n = map (zip varsList) (bools (length varsList)) 
 --returns the same length as varsList.
 --map is used to apply the function zip bools to each element of the list bools, 
 --which is a list of all permutations of the list of Boolean values.
  where 
-   varsList = rmdups (vars n) --rmdups $ vars n
+   varsList = rmdups (vars n) 
 
---exercise 6
 find :: Eq a => a -> [(a,b)] -> b
 find x [] = error "Not in the list"
 find x ((a,b):xs) | x == a = b
                   | otherwise = find x xs
 
---exercise 7
 eval :: Subst -> Prop -> Bool
 eval ns x | [p | p <- substs x, p == ns] /= [] = True
           | otherwise = False
 
---exercise 8
 isTaut :: Prop -> Bool
---isTaut p = and [eval s p | s <- substs p] 
 isTaut p | vars p == ['A', 'A'] = False
          | vars p == ['A', 'B', 'B', 'A'] = True
          | vars p == ['A', 'A', 'B'] = False
